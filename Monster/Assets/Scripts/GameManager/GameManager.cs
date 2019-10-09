@@ -1,16 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+
+public class GameManager : SingletonMonoBehaviour<GameManager>
 {
+
+    [SerializeField]
+    private float[] SectionTime = new float[3];
+
     public delegate void FaseChange();
     FaseChange faseChange;
+
+
 
     private enum GameState
     {
         title,
-        mainStart,
         mainFase1Start,
         mainFase1,
         mainFase2Start,
@@ -22,6 +29,12 @@ public class GameManager : MonoBehaviour
     }
 
     private GameState CurrentState;
+
+
+    private float sectionTime = 0f;
+
+
+
 
     void Quit()
     {
@@ -42,25 +55,30 @@ public class GameManager : MonoBehaviour
         switch (CurrentState)
         {
             case GameState.title:
+                Title();
                 break;
-            case GameState.mainStart:
-                break;
+            //case GameState.mainStart:
+            //    break;
             case GameState.mainFase1Start:
-                FaseStart(1);
+                MainFase1Start();
                 break;
             case GameState.mainFase1:
+                MainFase1();
                 break;
             case GameState.mainFase2Start:
-                FaseStart(2);
+                MainFase2Start();
                 break;
             case GameState.mainFase2:
+                MainFase2();
                 break;
             case GameState.mainFase3Start:
-                FaseStart(3);
+                MainFase3Start();
                 break;
             case GameState.mainFase3:
+                MainFase3();
                 break;
             case GameState.result:
+                ResultFase();
                 break;
             case GameState.Pause:
                 break;
@@ -71,18 +89,68 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void FaseStart(int faseNumber)
+    private void Title()
+    {
+
+    }
+
+
+    private void MainFase1Start()
+    {
+
+    }
+
+
+    private void MainFase1()
+    {
+
+    }
+
+
+    private void MainFase2Start()
+    {
+
+    }
+
+
+    private void MainFase2()
+    {
+
+    }
+
+
+    private void MainFase3Start()
+    {
+
+    }
+
+
+    private void MainFase3()
+    {
+
+    }
+
+
+    private void ResultFase()
+    {
+
+    }
+
+
+
+
+    private void FaseChanger(int faseNumber)
     {
         if(faseNumber == 1)
         {
-            faseChange = FaseStartFade.Fase1Start;
+            //faseChange = FaseStartFade.Fase1Start;
         }else if(faseNumber == 2)
         {
-            faseChange = FaseStartFade.Fase2Start;
+            //faseChange = FaseStartFade.Fase2Start;
         }
         else if(faseNumber == 3)
         {
-            faseChange = FaseStartFade.Fase3Start;
+            //faseChange = FaseStartFade.Fase3Start;
         }
         else
         {
@@ -93,5 +161,16 @@ public class GameManager : MonoBehaviour
 
     }
 
+
+    private void SectionTimeCount()
+    {
+        sectionTime += Time.deltaTime;
+
+    }
+
+    public void hoge()
+    {
+        Debug.Log("うおおおおお");
+    }
 
 }

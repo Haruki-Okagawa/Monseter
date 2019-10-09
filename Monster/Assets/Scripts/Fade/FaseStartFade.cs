@@ -21,22 +21,25 @@ public class FaseStartFade : MonoBehaviour
 
     private void FixedUpdate()
     {
-
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            GameManager.Instance.hoge();
+        }
 
 
     }
 
-    public static void Fase1Start()
+    public static void Fase1StartFade()
     {
         
     }
 
-    public static void Fase2Start()
+    public static void Fase2StartFade()
     {
 
     }
 
-    public static void Fase3Start()
+    public static void Fase3StartFade()
     {
 
     }
