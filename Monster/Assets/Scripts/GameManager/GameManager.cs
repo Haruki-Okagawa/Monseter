@@ -31,7 +31,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     private GameState CurrentState;
 
 
-    private float sectionTime = 0f;
+    private float CurrentTime = 0f;
 
 
 
@@ -45,9 +45,17 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 #endif
     }
 
-    private void Start()
+
+    private void Initialize()
     {
         CurrentState = GameState.title;
+    }
+
+
+    private void Start()
+    {
+        //CurrentState = GameState.title;
+        Initialize();
     }
 
     private void Update()
@@ -91,80 +99,96 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     private void Title()
     {
-
+        FaseChanger(1, 0);
     }
 
 
     private void MainFase1Start()
     {
-
+        FaseChanger(2, 0);
     }
 
 
     private void MainFase1()
     {
-
+        FaseChanger(3, SectionTime[0]);
     }
 
 
     private void MainFase2Start()
     {
-
+        FaseChanger(4, 0);
     }
 
 
     private void MainFase2()
     {
-
+        FaseChanger(5, SectionTime[1]);
     }
 
 
     private void MainFase3Start()
     {
+        FaseChanger(6, 0);
 
     }
 
 
     private void MainFase3()
     {
+        FaseChanger(7, SectionTime[2]);
 
     }
 
 
     private void ResultFase()
     {
+        FaseChanger(8, 0);
+
+    }
+
+    private void PauseFase()
+    {
 
     }
 
 
 
 
-    private void FaseChanger(int faseNumber)
+    private void FaseChanger(int faseNumber , float timeLimit)
     {
-        if(faseNumber == 1)
+        if(CurrentTime >= timeLimit)
         {
-            //faseChange = FaseStartFade.Fase1Start;
-        }else if(faseNumber == 2)
-        {
-            //faseChange = FaseStartFade.Fase2Start;
-        }
-        else if(faseNumber == 3)
-        {
-            //faseChange = FaseStartFade.Fase3Start;
-        }
-        else
-        {
-            Quit();
+            CurrentState = (GameState)faseNumber;
         }
 
-        faseChange();
+        //if(faseNumber == 1)
+        //{
+        //    faseChange = { CurrentState = GameState.mainFase1Start; }
+        //    //faseChange = FaseStartFade.Fase1Start;
+        //}else if(faseNumber == 2)
+        //{
+        //    faseChange = { CurrentState = GameState.mainFase1; }
+        //    //faseChange = FaseStartFade.Fase2Start;
+        //}
+        //else if(faseNumber == 3)
+        //{
+        //    faseChange = { if (sectionTime >= _sectionTime) CurrentState = GameState.mainFase2; }
+        //    //faseChange = FaseStartFade.Fase3Start;
+        //}
+        //else
+        //{
+        //    Quit();
+        //}
+
+        //faseChange();
 
     }
 
 
     private void SectionTimeCount()
     {
-        sectionTime += Time.deltaTime;
+        CurrentTime += Time.deltaTime;
 
     }
 
