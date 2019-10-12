@@ -49,3 +49,11 @@ Thumbs.db
 
 #python bytecode cache, for some plugins.
 *.pyc
+Monster/Library/EditorInstance.json
+Monster/Library/metadata/2a/2a65fb008adf94d81bb47b70567a20bf
+Monster/Library/metadata/2a/2a65fb008adf94d81bb47b70567a20bf.info
+Monster/Library/metadata/49/493767f0e76cc46d5b2b78876c6ca45d
+Monster/Library/metadata/49/493767f0e76cc46d5b2b78876c6ca45d.info
+Monster/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll.mdb
+Monster/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll.mdb.meta
+Monster/Library/ScriptAssemblies/BuiltinAssemblies.stamp
