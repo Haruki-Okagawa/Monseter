@@ -32,6 +32,18 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
 
     private float CurrentTime = 0f;
+    private bool isFaseChange = true;
+    public bool IsFaseChange
+    {
+        get
+        {
+            return isFaseChange;
+        }
+        set
+        {
+            isFaseChange = value;
+        }
+    }
 
 
 
@@ -60,6 +72,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     private void Update()
     {
+        SectionTimeCount();
         switch (CurrentState)
         {
             case GameState.title:
@@ -99,51 +112,59 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     private void Title()
     {
-        FaseChanger(1, 0);
+        Debug.Log("Title");
+        FaseChanger(1, 0, IsFaseChange);
     }
 
 
     private void MainFase1Start()
     {
-        FaseChanger(2, 0);
+        Debug.Log("MainFase1Start");
+        FaseChanger(2, 0, IsFaseChange);
     }
 
 
     private void MainFase1()
     {
-        FaseChanger(3, SectionTime[0]);
+        Debug.Log("MainFase1");
+        FaseChanger(3, SectionTime[0], true);
     }
 
 
     private void MainFase2Start()
     {
-        FaseChanger(4, 0);
+        Debug.Log("MainFase2Start");
+        FaseChanger(4, 0, IsFaseChange);
     }
 
 
     private void MainFase2()
     {
-        FaseChanger(5, SectionTime[1]);
+        Debug.Log("MainFase2");
+        FaseChanger(5, SectionTime[1], true);
     }
 
 
     private void MainFase3Start()
     {
-        FaseChanger(6, 0);
+        Debug.Log("MainFase3Start");
+        FaseChanger(6, 0, IsFaseChange);
 
     }
 
 
     private void MainFase3()
     {
-        FaseChanger(7, SectionTime[2]);
+        Debug.Log("MainFase3");
+        FaseChanger(7, SectionTime[2], true);
 
     }
 
 
     private void ResultFase()
     {
-        FaseChanger(8, 0);
+        Debug.Log("ResultFase");
+        FaseChanger(8, 0, IsFaseChange);
 
     }
 
@@ -155,10 +176,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
 
 
-    private void FaseChanger(int faseNumber , float timeLimit)
+    private void FaseChanger(int faseNumber , float timeLimit , bool _isChange)
     {
-        if(CurrentTime >= timeLimit)
+        if(CurrentTime >= timeLimit && _isChange == true)
         {
+            CurrentTime = 0;
             CurrentState = (GameState)faseNumber;
         }
 
