@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 257618730}
   - component: {fileID: 257618729}
   - component: {fileID: 257618734}
+  - component: {fileID: 257618735}
   m_Layer: 0
   m_Name: Victim
   m_TagString: Untagged
@@ -224,7 +225,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 257618728}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.316, y: 5.69, z: 21.2}
+  m_LocalPosition: {x: -0.316, y: 5.69, z: 26.38}
   m_LocalScale: {x: 10.072453, y: 10.072453, z: 10.072453}
   m_Children: []
   m_Father: {fileID: 0}
@@ -237,9 +238,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 257618728}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8507d22ddcf8547569ce80ed8d8ffb7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &257618735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257618728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8ac24d285db64f31b559eaab1c63a04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &467289008
@@ -414,7 +427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &555381965
 Transform:
   m_ObjectHideFlags: 0
@@ -517,7 +530,7 @@ Light:
   serializedVersion: 9
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 2.02
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -559,7 +572,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 1.46
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -596,7 +609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &962812016
 Transform:
   m_ObjectHideFlags: 0
@@ -734,7 +747,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1369793559
 Transform:
   m_ObjectHideFlags: 0
@@ -889,7 +902,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 4afd17eb0447447c6b14d710feb5b34a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.8
+      value: 18.2
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4afd17eb0447447c6b14d710feb5b34a,
         type: 3}

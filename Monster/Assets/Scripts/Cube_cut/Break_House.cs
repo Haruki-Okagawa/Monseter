@@ -179,6 +179,7 @@ namespace Shinobu_is_me
                     indice[1] = indices[ind + 1];
                     indice[2] = indices[ind + 2];
                     Vector3 temp = new Vector3();
+                    //中央のポイント探索
                     for (int t = 0; t < indice.Length; t++)
                     {
                         temp = victim_mesh.vertices[indice[t]];
@@ -301,14 +302,17 @@ namespace Shinobu_is_me
 
                     if(pos[0] == pos[1] && pos[0] == pos[2])
                     {
+                        //同じポイントならそのままその場所に保存
                         victim_child[pos[0]].AddTriangle(indice, sub);
                     }
                     else
                     {
+                        //頂点が2ポイントにまたがっている時
                         if (pos[0] == pos[1] || pos[0] == pos[2] || pos[1] == pos[2])
                         {
-
+                            Cut_two_point_Face(sub, indice[0], indice[1], indice[2], pos);
                         }
+                        //頂点が３ポイントにまたがっている時
                         else
                         {
                             Cut_this_Face(sub, indice[0], indice[1], indice[2], pos);
@@ -399,7 +403,116 @@ namespace Shinobu_is_me
 
 
         /// <summary>
-        /// 全ての辺をカット　1トライアングル制作
+        /// 2ポイントをまたがる辺をカット　1トライアングル制作
+        /// </summary>
+        /// <param name="sub"></param>
+        /// <param name="index1">頂点１</param>
+        /// <param name="index2">頂点２</param>
+        /// <param name="index3">頂点３</param>
+        private static void Cut_two_point_Face(int sub, int index1, int index2, int index3, int[] pos)
+        {
+
+            //同じポイントの頂点
+            int[] same_point = new int[2];
+            //別ポイント
+            int another_point;
+
+            //それぞれの辺の長さ
+            float[] lengths = new float[3];
+
+            //それぞれの情報保持
+            Vector3[] points = new Vector3[3];
+            Vector2[] uvs = new Vector2[3];
+            Vector3[] normals = new Vector3[3];
+
+            //ポイント保存
+            points[0] = victim_mesh.vertices[index1];
+            points[1] = victim_mesh.vertices[index2];
+            points[2] = victim_mesh.vertices[index3];
+
+            //uv保存
+            uvs[0] = victim_mesh.uv[index1];
+            uvs[1] = victim_mesh.uv[index2];
+            uvs[2] = victim_mesh.uv[index3];
+
+            //法線保存
+            normals[0] = victim_mesh.normals[index1];
+            normals[1] = victim_mesh.normals[index2];
+            normals[2] = victim_mesh.normals[index3];
+
+            //長さ保存
+            lengths[0] = (points[0] - points[1]).magnitude;
+            lengths[1] = (points[0] - points[2]).magnitude;
+            lengths[2] = (points[1] - points[2]).magnitude;
+
+            //Debug.Log("クランベリー・トラップ");
+
+            //同じ場所を探す
+            if(pos[0] == pos[1])
+            {
+                same_point[0] = 0;
+                same_point[1] = 1;
+                another_point = 2;
+            }
+            else if(pos[0] == pos[2])
+            {
+                same_point[0] = 0;
+                same_point[1] = 2;
+                another_point = 1;
+            }
+            else
+            {
+                same_point[0] = 1;
+                same_point[1] = 2;
+                another_point = 0;
+            }
+
+
+            //2つの中間の頂点を作成
+            Vector3 new_vector1 = Vector3.Lerp(points[another_point], points[same_point[0]], 0.5f);
+            Vector2 new_uv1 = Vector2.Lerp(uvs[another_point], uvs[same_point[0]], 0.5f);
+            Vector3 new_normal1 = Vector3.Lerp(normals[another_point], normals[same_point[0]], 0.5f);
+
+            Vector3 new_vector2 = Vector3.Lerp(points[same_point[1]], points[another_point], 0.5f);
+            Vector2 new_uv2 = Vector2.Lerp(uvs[same_point[1]], uvs[another_point], 0.5f);
+            Vector3 new_normal2 = Vector3.Lerp(normals[same_point[1]], normals[another_point], 0.5f);
+
+
+            //Debug.Log("恋の迷路");
+
+            victim_child[pos[same_point[0]]].AddTriangle(
+                   new Vector3[] { points[same_point[0]], new_vector1, new_vector2 },
+                   new Vector3[] { new_normal2, new_normal2, new_normal2 },
+                   new Vector2[] { uvs[same_point[0]], new_uv1, new_uv2 },
+                   new_normal2,
+                   sub
+               );
+            victim_child[pos[same_point[0]]].AddTriangle(
+                new Vector3[] { points[same_point[0]], new_vector2 ,points[same_point[1]]},
+                new Vector3[] { new_normal2, new_normal2, new_normal2 },
+                new Vector2[] { uvs[same_point[0]], new_uv2, uvs[same_point[1]]},
+                new_normal2,
+                sub
+            );
+            victim_child[pos[another_point]].AddTriangle(
+                new Vector3[] { new_vector1, points[another_point] ,new_vector2},
+                new Vector3[] { new_normal2, new_normal2, new_normal2 },
+                new Vector2[] { new_uv1, uvs[another_point], new_uv2 },
+                new_normal2,
+                sub
+            );
+
+            victim_child[pos[same_point[0]]].new_across_vertices.Add(new_vector2);
+            victim_child[pos[another_point]].new_across_vertices.Add(new_vector2);
+
+            victim_child[pos[same_point[0]]].new_half_vertices.Add(new_vector1);
+            victim_child[pos[another_point]].new_half_vertices.Add(new_vector1);
+
+            //四つの三角を作成 作った頂点も保存
+        }
+
+        /// <summary>
+        /// 3ポイントをまたがる辺をカット　1トライアングル制作
         /// </summary>
         /// <param name="sub"></param>
         /// <param name="index1">頂点１</param>
@@ -409,6 +522,10 @@ namespace Shinobu_is_me
         {
             //中央の三角のポイント
             int center_point;
+
+            //中央以外のポイント
+            int[] not_center_point = new int[2];
+
             //それぞれの辺の長さ
             float[] lengths = new float[3];
 
@@ -446,195 +563,95 @@ namespace Shinobu_is_me
             lengths[0] = (points[0] - points[1]).magnitude;
             lengths[1] = (points[0] - points[2]).magnitude;
             lengths[2] = (points[1] - points[2]).magnitude;
+            Debug.Log("length[0] = " + lengths[0]);
+            Debug.Log("length[1] = " + lengths[1]);
+            Debug.Log("length[2] = " + lengths[2]);
+
 
             //Debug.Log("クランベリー・トラップ");
 
             //中央のポイント探索
             if (lengths[0] > lengths[1] && lengths[0] > lengths[2])
             {
-                center_point = index3;
+                center_point = 2;
+                not_center_point[0] = 0;
+                not_center_point[1] = 1;
             }
             else if (lengths[1] > lengths[0] && lengths[1] > lengths[2])
             {
-                center_point = index2;
+                center_point = 1;
+                not_center_point[0] = 0;
+                not_center_point[1] = 2;
             }
             else if (lengths[2] > lengths[0] && lengths[2] > lengths[1])
             {
-                center_point = index1;
+                center_point = 0;
+                not_center_point[0] = 1;
+                not_center_point[1] = 2;
             }
             else
             {
                 Debug.Log("error: same length");
-                center_point = index1;
+                center_point = 0;
                 //Object.Destroy(victim);
                 //break;
             }
 
 
             //三つの中間の頂点を作成
-            Vector3 new_vector1 = Vector3.Lerp(points[0], points[1], 0.5f);
-            Vector2 new_uv1 = Vector2.Lerp(uvs[0], uvs[1], 0.5f);
-            Vector3 new_normal1 = Vector3.Lerp(normals[0], normals[1], 0.5f);
+            Vector3 new_vector1 = Vector3.Lerp(points[center_point], points[not_center_point[0]], 0.5f);
+            Vector2 new_uv1 = Vector2.Lerp(uvs[center_point], uvs[not_center_point[0]], 0.5f);
+            Vector3 new_normal1 = Vector3.Lerp(normals[center_point], normals[not_center_point[0]], 0.5f);
 
-            Vector3 new_vector2 = Vector3.Lerp(points[0], points[2], 0.5f);
-            Vector2 new_uv2 = Vector2.Lerp(uvs[0], uvs[2], 0.5f);
-            Vector3 new_normal2 = Vector3.Lerp(normals[0], normals[2], 0.5f);
+            Vector3 new_vector2 = Vector3.Lerp(points[center_point], points[not_center_point[1]], 0.5f);
+            Vector2 new_uv2 = Vector2.Lerp(uvs[center_point], uvs[not_center_point[1]], 0.5f);
+            Vector3 new_normal2 = Vector3.Lerp(normals[center_point], normals[not_center_point[1]], 0.5f);
 
-            Vector3 new_vector3 = Vector3.Lerp(points[1], points[2], 0.5f);
-            Vector2 new_uv3 = Vector2.Lerp(uvs[1], uvs[2], 0.5f);
-            Vector3 new_normal3 = Vector3.Lerp(normals[2], normals[1], 0.5f);
-            //Debug.Log("new_normal1 = " + new_normal1);
-            //Debug.Log("new_normal2 = " + new_normal2);
-            //Debug.Log("new_normal3 = " + new_normal3);
+            Vector3 new_vector3 = Vector3.Lerp(points[not_center_point[0]], points[not_center_point[1]], 0.5f);
+            Vector2 new_uv3 = Vector2.Lerp(uvs[not_center_point[0]], uvs[not_center_point[1]], 0.5f);
+            Vector3 new_normal3 = Vector3.Lerp(normals[not_center_point[0]], normals[not_center_point[1]], 0.5f);
 
             //Debug.Log("恋の迷路");
 
-            //new_normal1 = new Vector3(0, 1, 0);
-
-            //if (pos[0] == 0 || pos[0] == 1 || pos[0] == 2 || pos[0] == 3)
-            //{
-            //    if(pos[1] == 0 || pos[1] == 1 || pos[1] == 2 || pos[1] == 3)
-            //    {
-            //        if(pos[1] == 0 || pos[1] == 1 || pos[1] == 2 || pos[1] == 3)
-            //        {
-
-            //        }
-            //    }
-            //}
-
-
-
             //四つの三角を作成 作った頂点も保存
-            if (center_point == index1)
-            {
-                victim_child[pos[0]].AddTriangle(
-                    new Vector3[] { new_vector2, points[0], new_vector1 },
+            victim_child[pos[center_point]].AddTriangle(
+                    new Vector3[] { new_vector2, points[center_point], new_vector1 },
                     new Vector3[] { new_normal3, new_normal3, new_normal3 },
-                    new Vector2[] { new_uv2, uvs[0], new_uv1 },
+                    new Vector2[] { new_uv2, uvs[center_point], new_uv1 },
                     new_normal3,
                     sub
                 );
-                victim_child[pos[0]].AddTriangle(
+            victim_child[pos[center_point]].AddTriangle(
                     new Vector3[] { new_vector2, new_vector1, new_vector3 },
                     new Vector3[] { new_normal3, new_normal3, new_normal3 },
                     new Vector2[] { new_uv2, new_uv1, new_uv3 },
                     new_normal3,
                     sub
                 );
-                victim_child[pos[1]].AddTriangle(
-                    new Vector3[] { new_vector3, new_vector1, points[1] },
+            victim_child[pos[not_center_point[0]]].AddTriangle(
+                    new Vector3[] { new_vector3, new_vector1, points[not_center_point[0]] },
                     new Vector3[] { new_normal3, new_normal3, new_normal3 },
-                    new Vector2[] { new_uv3, new_uv1, uvs[1] },
+                    new Vector2[] { new_uv3, new_uv1, uvs[not_center_point[0]] },
                     new_normal3,
                     sub
                 );
-                victim_child[pos[2]].AddTriangle(
-                    new Vector3[] { points[2], new_vector2, new_vector3 },
+            victim_child[pos[not_center_point[1]]].AddTriangle(
+                    new Vector3[] { points[not_center_point[1]], new_vector2, new_vector3 },
                     new Vector3[] { new_normal3, new_normal3, new_normal3 },
-                    new Vector2[] { uvs[2], new_uv2, new_uv3 },
+                    new Vector2[] { uvs[not_center_point[1]], new_uv2, new_uv3 },
                     new_normal3,
                     sub
                 );
+            victim_child[pos[center_point]].new_across_vertices.Add(new_vector3);
+            victim_child[pos[not_center_point[0]]].new_across_vertices.Add(new_vector3);
+            victim_child[pos[not_center_point[1]]].new_across_vertices.Add(new_vector3);
 
-                victim_child[pos[0]].new_across_vertices.Add(new_vector3);
-                victim_child[pos[1]].new_across_vertices.Add(new_vector3);
-                victim_child[pos[2]].new_across_vertices.Add(new_vector3);
+            victim_child[pos[center_point]].new_half_vertices.Add(new_vector1);
+            victim_child[pos[not_center_point[0]]].new_half_vertices.Add(new_vector1);
 
-                victim_child[pos[0]].new_half_vertices.Add(new_vector1);
-                victim_child[pos[1]].new_half_vertices.Add(new_vector1);
+            victim_child[pos[center_point]].new_half_vertices.Add(new_vector2);
+            victim_child[pos[not_center_point[1]]].new_half_vertices.Add(new_vector2);
 
-                victim_child[pos[0]].new_half_vertices.Add(new_vector2);
-                victim_child[pos[2]].new_half_vertices.Add(new_vector2);
-
-            }
-            else if (center_point == index2)
-            {
-                victim_child[pos[1]].AddTriangle(
-                    new Vector3[] { new_vector1, points[1], new_vector3 },
-                    new Vector3[] { new_normal2, new_normal2, new_normal2 },
-                    new Vector2[] { new_uv1, uvs[1], new_uv3 },
-                    new_normal2,
-                    sub
-                );
-                victim_child[pos[1]].AddTriangle(
-                    new Vector3[] { new_vector1, new_vector3, new_vector2 },
-                    new Vector3[] { new_normal2, new_normal2, new_normal2 },
-                    new Vector2[] { new_uv1, new_uv3, new_uv2 },
-                    new_normal2,
-                    sub
-                );
-                victim_child[pos[2]].AddTriangle(
-                    new Vector3[] { new_vector2, new_vector3, points[2] },
-                    new Vector3[] { new_normal2, new_normal2, new_normal2 },
-                    new Vector2[] { new_uv2, new_uv3, uvs[2] },
-                    new_normal2,
-                    sub
-                );
-                victim_child[pos[0]].AddTriangle(
-                    new Vector3[] { points[0], new_vector1, new_vector2 },
-                    new Vector3[] { new_normal2, new_normal2, new_normal2 },
-                    new Vector2[] { uvs[0], new_uv1, new_uv2 },
-                    new_normal2,
-                    sub
-                );
-
-                //if (!victim_child[pos[1]].new_across_vertices.Contains(new_vector2))
-                //{
-                victim_child[pos[1]].new_across_vertices.Add(new_vector2);
-                victim_child[pos[0]].new_across_vertices.Add(new_vector2);
-                victim_child[pos[2]].new_across_vertices.Add(new_vector2);
-                //}
-
-                victim_child[pos[1]].new_half_vertices.Add(new_vector1);
-                victim_child[pos[0]].new_half_vertices.Add(new_vector1);
-
-                victim_child[pos[1]].new_half_vertices.Add(new_vector3);
-                victim_child[pos[2]].new_half_vertices.Add(new_vector3);
-            }
-            else if (center_point == index3)
-            {
-                victim_child[pos[2]].AddTriangle(
-                    new Vector3[] { new_vector3, points[2], new_vector2 },
-                    new Vector3[] { new_normal1, new_normal1, new_normal1 },
-                    new Vector2[] { new_uv3, uvs[2], new_uv2 },
-                    new_normal1,
-                    sub
-                );
-                victim_child[pos[2]].AddTriangle(
-                    new Vector3[] { new_vector3, new_vector2, new_vector1 },
-                    new Vector3[] { new_normal1, new_normal1, new_normal1 },
-                    new Vector2[] { new_uv3, new_uv2, new_uv1 },
-                    new_normal1,
-                    sub
-                );
-                victim_child[pos[0]].AddTriangle(
-                    new Vector3[] { new_vector1, new_vector2, points[0] },
-                    new Vector3[] { new_normal1, new_normal1, new_normal1 },
-                    new Vector2[] { new_uv1, new_uv2, uvs[0] },
-                    new_normal1,
-                    sub
-                );
-                victim_child[pos[1]].AddTriangle(
-                    new Vector3[] { points[1], new_vector3, new_vector1 },
-                    new Vector3[] { new_normal1, new_normal1, new_normal1 },
-                    new Vector2[] { uvs[1], new_uv3, new_uv1 },
-                    new_normal1,
-                    sub
-                );
-
-                //if (!victim_child[pos[2]].new_across_vertices.Contains(new_vector1))
-                //{
-                victim_child[pos[2]].new_across_vertices.Add(new_vector1);
-                victim_child[pos[0]].new_across_vertices.Add(new_vector1);
-                victim_child[pos[1]].new_across_vertices.Add(new_vector1);
-                //}
-
-                victim_child[pos[2]].new_half_vertices.Add(new_vector3);
-                victim_child[pos[1]].new_half_vertices.Add(new_vector3);
-
-                victim_child[pos[2]].new_half_vertices.Add(new_vector2);
-                victim_child[pos[0]].new_half_vertices.Add(new_vector2);
-            }
         }
 
         /// <summary>
@@ -656,13 +673,6 @@ namespace Shinobu_is_me
             {
                 //重複した値を消す
                 victim_child[i].new_across_vertices = Clean_Up(victim_child[i].new_across_vertices);
-                //victim_child[i].new_half_vertices = Clean_Up(victim_child[i].new_half_vertices);
-
-                //for (int tes = 0; tes < victim_child[i].new_across_vertices.Count; tes++)
-                //{
-                //    Debug.Log("across[" + tes + "] = " + victim_child[i].new_across_vertices[tes]);
-
-                //}
                 //Debug.Log("あなたがコンテニューできないのさ！");
                 //インデックスの追加
                 //for (int add_sub = 0; add_sub < victim_child.Length; add_sub++)
