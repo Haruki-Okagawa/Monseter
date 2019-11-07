@@ -10,6 +10,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     [SerializeField]
     private float[] SectionTime = new float[3];
 
+    [SerializeField]
+    private GameObject[] Hose = new GameObject[10];
+
     public delegate void FaseChange();
     FaseChange faseChange;
 
