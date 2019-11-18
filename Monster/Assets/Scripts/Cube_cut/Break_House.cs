@@ -15,11 +15,15 @@ namespace Shinobu_is_me
             public List<int> triangles = new List<int>();
             public List<List<int>> subIndices = new List<List<int>>();
 
+            //※Cube破壊の時に使用
             //斜めの辺を切った時に新しく作った頂点と法線
-            public List<Vector3> new_across_vertices = new List<Vector3>();
-            //まっすぐな辺を切った時に新しく作った頂点と法線
-            public List<Vector3> new_half_vertices = new List<Vector3>();
-            public List<Vector3> new_under_vetices = new List<Vector3>();
+            //public List<Vector3> new_across_vertices = new List<Vector3>();
+            //まっすぐな辺を切った時に新しく作った頂点と法線 　
+            //public List<Vector3> new_half_vertices = new List<Vector3>();
+
+
+            //作られた点がその場所に適応されるか 0が上下　１が左右　２が手前奥
+            public List<Vector3> new_vertices = new List<Vector3>();
 
             public void ClearAll()
             {
@@ -324,7 +328,7 @@ namespace Shinobu_is_me
                     //Debug.Log("パチュリー・ノーレッジ");
                 }
             }
-            //Fill_hole();
+            Fill_hole();
 
             Material[] mats = victim.GetComponent<MeshRenderer>().sharedMaterials;
 
@@ -361,13 +365,13 @@ namespace Shinobu_is_me
 
             GameObject[] cube_obj = new GameObject[8];
             cube_obj[0] = victim;
-            //Object.Destroy(cube_obj[0].GetComponent<BoxCollider>());
-            //_ = cube_obj[0].AddComponent(typeof(BoxCollider));
-            //cube_obj[0].AddComponent(typeof(Rigidbody));
-            //Object.Destroy(cube_obj[0], 7.0f);
-            //Object.Destroy(cube_obj[0].GetComponent<Space_Cut_Cube>());
-            //Rigidbody temp_rigid = cube_obj[0].GetComponent<Rigidbody>();
-            //temp_rigid.AddForce(temp_velocity / 8);
+            Object.Destroy(cube_obj[0].GetComponent<BoxCollider>());
+            _ = cube_obj[0].AddComponent(typeof(BoxCollider));
+            cube_obj[0].AddComponent(typeof(Rigidbody));
+            Object.Destroy(cube_obj[0], 7.0f);
+            Object.Destroy(cube_obj[0].GetComponent<Space_Cut_Cube>());
+            Rigidbody temp_rigid = cube_obj[0].GetComponent<Rigidbody>();
+            //temp_rigid.AddForce(temp_velocity / 80);
             //分割回数を入
             Verosity_Cut_Cube temp_cut = cube_obj[0].GetComponent<Verosity_Cut_Cube>();
             int cutcount = temp_cut.Cut_Count + 1;
@@ -387,10 +391,10 @@ namespace Shinobu_is_me
                 cube_obj[i].transform.localScale = victim.transform.localScale;
                 cube_obj[i].GetComponent<MeshFilter>().mesh = one_eight_mesh[i];
                 cube_obj[i].GetComponent<MeshRenderer>().materials = mats;
-                //cube_obj[i].AddComponent(typeof(BoxCollider));
+                cube_obj[i].AddComponent(typeof(BoxCollider));
                 cube_obj[i].AddComponent(typeof(Rigidbody));
-                //temp_rigid = cube_obj[0].GetComponent<Rigidbody>();
-                //temp_rigid.AddForce(temp_velocity/8);
+                temp_rigid = cube_obj[0].GetComponent<Rigidbody>();
+                //temp_rigid.AddForce(temp_velocity / 80);
                 cube_obj[i].AddComponent(typeof(Verosity_Cut_Cube));
 
                 temp_cut = cube_obj[i].GetComponent<Verosity_Cut_Cube>();
@@ -502,11 +506,11 @@ namespace Shinobu_is_me
                 sub
             );
 
-            victim_child[pos[same_point[0]]].new_across_vertices.Add(new_vector2);
-            victim_child[pos[another_point]].new_across_vertices.Add(new_vector2);
+            victim_child[pos[same_point[0]]].new_vertices.Add(new_vector2);
+            victim_child[pos[another_point]].new_vertices.Add(new_vector2);
 
-            victim_child[pos[same_point[0]]].new_half_vertices.Add(new_vector1);
-            victim_child[pos[another_point]].new_half_vertices.Add(new_vector1);
+            victim_child[pos[same_point[0]]].new_vertices.Add(new_vector1);
+            victim_child[pos[another_point]].new_vertices.Add(new_vector1);
 
             //四つの三角を作成 作った頂点も保存
         }
@@ -642,15 +646,15 @@ namespace Shinobu_is_me
                     new_normal3,
                     sub
                 );
-            victim_child[pos[center_point]].new_across_vertices.Add(new_vector3);
-            victim_child[pos[not_center_point[0]]].new_across_vertices.Add(new_vector3);
-            victim_child[pos[not_center_point[1]]].new_across_vertices.Add(new_vector3);
+            victim_child[pos[center_point]].new_vertices.Add(new_vector3);
+            victim_child[pos[not_center_point[0]]].new_vertices.Add(new_vector3);
+            victim_child[pos[not_center_point[1]]].new_vertices.Add(new_vector3);
 
-            victim_child[pos[center_point]].new_half_vertices.Add(new_vector1);
-            victim_child[pos[not_center_point[0]]].new_half_vertices.Add(new_vector1);
+            victim_child[pos[center_point]].new_vertices.Add(new_vector1);
+            victim_child[pos[not_center_point[0]]].new_vertices.Add(new_vector1);
 
-            victim_child[pos[center_point]].new_half_vertices.Add(new_vector2);
-            victim_child[pos[not_center_point[1]]].new_half_vertices.Add(new_vector2);
+            victim_child[pos[center_point]].new_vertices.Add(new_vector2);
+            victim_child[pos[not_center_point[1]]].new_vertices.Add(new_vector2);
 
         }
 
@@ -672,7 +676,7 @@ namespace Shinobu_is_me
             for (int i = 0; i < victim_child.Length; i++)
             {
                 //重複した値を消す
-                victim_child[i].new_across_vertices = Clean_Up(victim_child[i].new_across_vertices);
+                victim_child[i].new_vertices = Clean_Up(victim_child[i].new_vertices);
                 //Debug.Log("あなたがコンテニューできないのさ！");
                 //インデックスの追加
                 //for (int add_sub = 0; add_sub < victim_child.Length; add_sub++)
@@ -681,165 +685,30 @@ namespace Shinobu_is_me
 
                 //}
 
-                //法線作成
-                Create_normal(victim_child[i].new_across_vertices[0], victim_child[i].new_across_vertices[1], i, ref xyz_vertics_set, ref hole_normal);
-                Create_normal(victim_child[i].new_across_vertices[0], victim_child[i].new_across_vertices[2], i, ref xyz_vertics_set, ref hole_normal);
-                Create_normal(victim_child[i].new_across_vertices[1], victim_child[i].new_across_vertices[2], i, ref xyz_vertics_set, ref hole_normal);
-
-
-                //Debug.Log("My Hert Break");
-
-                victim_child[i].AddTriangle(
-                    new Vector3[]
-                    {
-                            xyz_vertics_set[0,0],
-                            xyz_vertics_set[0,1],
-                            Center_pos
-                    },
-                    new Vector3[]
-                    {
-                        hole_normal[0],
-                        hole_normal[0],
-                        hole_normal[0]
-                    },
-                    new Vector2[]
-                    {
-                            uvs1,
-                            uvs2,
-                            new Vector2(0.5f,0.5f)
-                    },
-                    hole_normal[0],
-                    victim_child[i].subIndices.Count - 1
-                    );
-
-                victim_child[i].AddTriangle(
-                    new Vector3[]
-                    {
-                            xyz_vertics_set[1,0],
-                            xyz_vertics_set[1,1],
-                            Center_pos
-                    },
-                    new Vector3[]
-                    {
-                        hole_normal[1],
-                        hole_normal[1],
-                        hole_normal[1]
-                    },
-                    new Vector2[]
-                    {
-                            uvs1,
-                            uvs2,
-                            new Vector2(0.5f,0.5f)
-                    },
-                    hole_normal[1],
-                    victim_child[i].subIndices.Count - 1
-                    );
-
-                victim_child[i].AddTriangle(
-                    new Vector3[]
-                    {
-                            xyz_vertics_set[2,0],
-                            xyz_vertics_set[2,1],
-                            Center_pos
-                    },
-                    new Vector3[]
-                    {
-                        hole_normal[2],
-                        hole_normal[2],
-                        hole_normal[2]
-                    },
-                    new Vector2[]
-                    {
-                            uvs1,
-                            uvs2,
-                            new Vector2(0.5f,0.5f)
-                    },
-                    hole_normal[2],
-                    victim_child[i].subIndices.Count - 1
-                    );
-
-                for (int t = 0; t < victim_child[i].new_half_vertices.Count; t++)
+                for (int ver = 0; ver < victim_child[i].new_vertices.Count-1; ver++)
                 {
-                    Vector3 vector_temp = new Vector3();
-                    vector_temp = victim_child[i].new_half_vertices[t];
-                    if (System.Math.Abs(vector_temp.x - xyz_vertics_set[0, 0].x) < float.Epsilon && System.Math.Abs(vector_temp.x - xyz_vertics_set[0, 1].x) < float.Epsilon)
-                    {
-                        victim_child[i].AddTriangle(
-                            new Vector3[]
-                            {
-                                vector_temp,
-                                xyz_vertics_set[0,0],
-                                xyz_vertics_set[0,1]
-
-                            },
-                            new Vector3[]
-                            {
-                                hole_normal[0],
-                                hole_normal[0],
-                                hole_normal[0]
-                            },
-                            new Vector2[]
-                            {
-                                    uvs1,
-                                    uvs2,
-                                    new Vector2(0.5f,0.5f)
-                            },
-                            hole_normal[0],
-                            victim_child[i].subIndices.Count - 1
-                            );
-                    }
-                    else if (System.Math.Abs(vector_temp.y - xyz_vertics_set[1, 0].y) < float.Epsilon && System.Math.Abs(vector_temp.y - xyz_vertics_set[1, 1].y) < float.Epsilon)
-                    {
-                        victim_child[i].AddTriangle(
-                            new Vector3[]
-                            {
-                                vector_temp,
-                                xyz_vertics_set[1,0],
-                                xyz_vertics_set[1,1]
-
-                            },
-                            new Vector3[]
-                            {
-                                hole_normal[1],
-                                hole_normal[1],
-                                hole_normal[1]
-                            },
-                            new Vector2[]
-                            {
-                                    uvs1,
-                                    uvs2,
-                                    new Vector2(0.5f,0.5f)
-                            },
-                            hole_normal[1],
-                            victim_child[i].subIndices.Count - 1
-                            );
-                    }
-                    else if (System.Math.Abs(vector_temp.z - xyz_vertics_set[2, 0].z) < float.Epsilon && System.Math.Abs(vector_temp.z - xyz_vertics_set[2, 1].z) < float.Epsilon)
-                    {
-                        victim_child[i].AddTriangle(
-                            new Vector3[]
-                            {
-                                vector_temp,
-                                xyz_vertics_set[2,0],
-                                xyz_vertics_set[2,1]
-
-                            },
-                            new Vector3[]
-                            {
-                                hole_normal[2],
-                                hole_normal[2],
-                                hole_normal[2]
-                            },
-                            new Vector2[]
-                            {
-                                    uvs1,
-                                    uvs2,
-                                    new Vector2(0.5f,0.5f)
-                            },
-                            hole_normal[2],
-                            victim_child[i].subIndices.Count - 1
-                            );
-                    }
+                    victim_child[i].AddTriangle(
+                   new Vector3[]
+                   {
+                       victim_child[i].new_vertices[ver],
+                       victim_child[i].new_vertices[ver + 1],
+                       Center_pos
+                   },
+                   new Vector3[]
+                   {
+                       hole_normal[0],
+                       hole_normal[0],
+                       hole_normal[0],
+                   },
+                   new Vector2[]
+                   {
+                       uvs1,
+                       uvs2,
+                       new Vector2(0.5f,0.5f)
+                   },
+                   hole_normal[0],
+                   victim_child[i].subIndices.Count - 1
+                   );
                 }
             }
         }

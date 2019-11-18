@@ -29,16 +29,16 @@ public class Verosity_Cut_Cube : MonoBehaviour
         //    Shinobu_am_me.Break_Mesh.Cut(this.gameObject);
         //}
         //Debug.Log("temp.velocity = " + temp.velocity.magnitude);
-        if (temp.velocity.magnitude > 40)
+        if (temp.velocity.magnitude > 80)
         {
-            if (cut_count < 4)
+            if (cut_count < 3)
             {
                 Shinobu_is_me.Break_Mesh.Cut(this.gameObject);
             }
             else
             {
                 Debug.Log("キュッとしてどかーん！");
-                //Destroy(this.gameObject);
+                Destroy(this.gameObject);
             }
         }
     }
